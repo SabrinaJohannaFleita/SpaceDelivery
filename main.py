@@ -83,6 +83,8 @@ spawn_timer = 0
 clock = pygame.time.Clock()
 is_running = True
 in_menu = True
+lives = 3  # <-- CONTROL DE VIDAS
+game_over = False  # <-- BANDERA DE DERROTA DEFINIDA AQUÍ
 
 # 4. MAIN GAME LOOP
 while is_running:
@@ -100,29 +102,59 @@ while is_running:
     if in_menu:
         show_menu()
     else:
-        # CONTROLES (Manejo do teclado para o Player)
-        keys_pressed = pygame.key.get_pressed()
-        player.move(keys_pressed)
+        if not game_over:
+            # CONTROLES
+            keys_pressed = pygame.key.get_pressed()
+            player.move(keys_pressed)
 
-        # LOGICA DOS OBSTACULOS
-        spawn_timer += 1
-        if spawn_timer >= 45:
-            obstacles.append(Obstacle())
-            spawn_timer = 0
+            # LOGICA DOS OBSTACULOS
+            spawn_timer += 1
+            if spawn_timer >= 45:
+                obstacles.append(Obstacle())
+                spawn_timer = 0
 
-        for obstacle in obstacles:
-            obstacle.update()
+            for obstacle in obstacles[:]:  # Copia de la lista para remover seguro
+                obstacle.update()
 
-        # Limpar obstáculos fora da tela
-        obstacles = [obs for obs in obstacles if obs.y < SCREEN_HEIGHT]
+                # CHEQUEAR COLISIÓN
+                player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
+                obstacle_rect = pygame.Rect(obstacle.x, obstacle.y, obstacle.width, obstacle.height)
 
-        # DESENHAR TELA DE JOGO
-        screen.fill((15, 15, 30))
+                if player_rect.colliderect(obstacle_rect):
+                    lives -= 1
+                    obstacles.remove(obstacle)
+                    if lives <= 0:
+                        game_over = True
 
-        player.draw(screen)
+            # Limpar obstáculos fora da tela
+            obstacles = [obs for obs in obstacles if obs.y < SCREEN_HEIGHT]
 
-        for obstacle in obstacles:
-            obstacle.draw(screen)
+            # DESENHAR TELA DE JOGO (NORMAL)
+            screen.fill((15, 15, 30))
+            player.draw(screen)
+            for obstacle in obstacles:
+                obstacle.draw(screen)
+
+            # Mostrar vidas en portugués
+            lives_surface = text_font.render(f"Vidas: {lives}", True, WHITE)
+            screen.blit(lives_surface, (20, 20))
+
+        else:
+            # PANTALLA DE GAME OVER
+            screen.fill((15, 15, 30))
+            game_over_surface = title_font.render("GAME OVER", True, (255, 50, 50))
+            restart_surface = text_font.render("Pressione ENTER para tentar novamente", True, WHITE)
+
+            screen.blit(game_over_surface, (SCREEN_WIDTH // 2 - game_over_surface.get_width() // 2, 250))
+            screen.blit(restart_surface, (SCREEN_WIDTH // 2 - restart_surface.get_width() // 2, 330))
+
+            # Reiniciar si presiona Enter estando en Game Over
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_RETURN]:
+                lives = 3
+                obstacles.clear()
+                game_over = False
+                player.x = SCREEN_WIDTH // 2 - player.width // 2
 
         pygame.display.flip()
 
