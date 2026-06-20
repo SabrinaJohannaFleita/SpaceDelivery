@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 # 1. SETUP INITIAL (Aula 1 & 2)
 pygame.init()
@@ -19,10 +20,9 @@ title_font = pygame.font.SysFont("Arial", 50, bold=True)
 text_font = pygame.font.SysFont("Arial", 24)
 
 
-# 2. PLAYER CLASS (Para tu diagrama UML de la Aula 2)
+# 2. PLAYER CLASS (Aula 2)
 class Player:
     def __init__(self):
-        # Usamos un rectángulo simple por ahora para no renegar con imágenes de entrada
         self.width = 50
         self.height = 40
         self.x = SCREEN_WIDTH // 2 - self.width // 2
@@ -36,8 +36,23 @@ class Player:
             self.x += self.speed
 
     def draw(self, surface):
-        # Dibujamos un rectángulo azul que representa nuestra nave espacial
         pygame.draw.rect(surface, BLUE, (self.x, self.y, self.width, self.height))
+
+
+# 3. OBSTACLE CLASS (O desafio exigido no PDF)
+class Obstacle:
+    def __init__(self):
+        self.width = 40
+        self.height = 40
+        self.x = random.randint(0, SCREEN_WIDTH - self.width)
+        self.y = -self.height
+        self.speed = random.randint(3, 6)
+
+    def update(self):
+        self.y += self.speed
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, (255, 50, 50), (self.x, self.y, self.width, self.height))
 
 
 def show_menu():
@@ -47,7 +62,7 @@ def show_menu():
     title_surface = title_font.render("DELIVERY ESPACIAL", True, NEON_GREEN)
     screen.blit(title_surface, (SCREEN_WIDTH // 2 - title_surface.get_width() // 2, 150))
 
-    # UI Requirements (Controles obligatorios en pantalla)
+    # UI Requirements (Controles obrigatórios em tela)
     controls_title = text_font.render("CONTROLES DA NAVE:", True, WHITE)
     move_control = text_font.render("<- / -> : Mover Nave de Entrega", True, WHITE)
     action_control = text_font.render("ESPAÇO : Lançar Raio Coletor", True, WHITE)
@@ -63,13 +78,15 @@ def show_menu():
 
 # Game Loop Variables
 player = Player()
+obstacles = []
+spawn_timer = 0
 clock = pygame.time.Clock()
 is_running = True
 in_menu = True
 
-# 3. MAIN GAME LOOP
+# 4. MAIN GAME LOOP
 while is_running:
-    clock.tick(60)  # Capado a 60 FPS para que no vaya a mil por hora
+    clock.tick(60)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -77,19 +94,35 @@ while is_running:
 
         if in_menu:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:  # ENTER Key para arrancar
+                if event.key == pygame.K_RETURN:
                     in_menu = False
 
     if in_menu:
         show_menu()
     else:
-        # CONTROLES (Manejo del teclado para el Player)
+        # CONTROLES (Manejo do teclado para o Player)
         keys_pressed = pygame.key.get_pressed()
         player.move(keys_pressed)
 
-        # DIBUJAR PANTALLA DE JUEGO
-        screen.fill((15, 15, 30))  # Fondo del espacio oscuro
-        player.draw(screen)  # Dibujamos la nave en su posición actual
+        # LOGICA DOS OBSTACULOS
+        spawn_timer += 1
+        if spawn_timer >= 45:
+            obstacles.append(Obstacle())
+            spawn_timer = 0
+
+        for obstacle in obstacles:
+            obstacle.update()
+
+        # Limpar obstáculos fora da tela
+        obstacles = [obs for obs in obstacles if obs.y < SCREEN_HEIGHT]
+
+        # DESENHAR TELA DE JOGO
+        screen.fill((15, 15, 30))
+
+        player.draw(screen)
+
+        for obstacle in obstacles:
+            obstacle.draw(screen)
 
         pygame.display.flip()
 
