@@ -50,7 +50,7 @@ class Player:
         pygame.draw.rect(surface, BLUE, (self.x, self.y, self.width, self.height))
 
 
-# 3. ITEM CLASS (Obstáculos y Paquetes - El Desafío y el Objetivo)
+# 3. ITEM CLASS
 class Item:
     def __init__(self, item_type):
         self.item_type = item_type  # Puede ser "obstacle" (rojo) o "package" (verde)
@@ -70,7 +70,7 @@ class Item:
             pygame.draw.rect(surface, NEON_GREEN, (self.x, self.y, self.width, self.height))
 
 
-# FUNCIÓN MENU CORREGIDA (Limpia y con blit de fondo)
+# FUNCIÓN MENU
 def show_menu():
     screen.blit(bg_image, (0, 0))
 
@@ -179,7 +179,7 @@ while is_running:
 
             items = [it for it in items if it.y < SCREEN_HEIGHT]
 
-            # DESENHAR TELA DE JOGO (Aquí pusimos tu fondo en vez de fill)
+            # DESENHAR TELA DE JOGO
             screen.blit(bg_image, (0, 0))
 
             if laser_active:
