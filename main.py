@@ -13,10 +13,12 @@ pygame.display.set_caption("Space Delivery: Mission Orbit")
 try:
     bg_image = pygame.image.load("background.png")
     bg_image = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    player_img = pygame.image.load("ship.png")
 except pygame.error as e:
     print(
         f"Error: No se pudo cargar background.png. Asegúrate de que el archivo esté en la misma carpeta. Detalle: {e}")
     sys.exit()
+
 
 # Colors
 BLACK = (10, 10, 20)
@@ -31,14 +33,15 @@ title_font = pygame.font.SysFont("Arial", 50, bold=True)
 text_font = pygame.font.SysFont("Arial", 24)
 
 
-# 2. PLAYER CLASS (Aula 2)
+# 2. PLAYER CLASS
 class Player:
     def __init__(self):
-        self.width = 50
-        self.height = 40
+        self.width = 90
+        self.height = 60
         self.x = SCREEN_WIDTH // 2 - self.width // 2
         self.y = SCREEN_HEIGHT - 70
         self.speed = 7
+        self.image = pygame.transform.scale(player_img, (self.width, self.height))
 
     def move(self, keys):
         if keys[pygame.K_LEFT] and self.x > 0:
@@ -47,7 +50,7 @@ class Player:
             self.x += self.speed
 
     def draw(self, surface):
-        pygame.draw.rect(surface, BLUE, (self.x, self.y, self.width, self.height))
+        surface.blit(self.image, (self.x, self.y))
 
 
 # 3. ITEM CLASS
