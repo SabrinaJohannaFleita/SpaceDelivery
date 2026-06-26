@@ -65,15 +65,20 @@ class Item:
         self.y = -self.height
         self.speed = random.randint(3, 6)
 
+    if self.item_type == "obstacle":
+        self.image = pygame.transform.scale(asteroid_img, (self.width, self.height))
+
     def update(self):
         self.y += self.speed
 
-    def draw(self, surface):
-        if self.item_type == "obstacle":
-            pygame.draw.rect(surface, RED, (self.x, self.y, self.width, self.height))
-        else:
-            pygame.draw.rect(surface, NEON_GREEN, (self.x, self.y, self.width, self.height))
 
+def draw(self, surface):
+    if self.item_type == "obstacle":
+        # En vez de un rectángulo rojo, dibujamos el asteroide
+        surface.blit(self.image, (self.x, self.y))
+    else:
+        # El paquete verde lo dejamos como rectángulo por ahora hasta que tengas su imagen
+        pygame.draw.rect(surface, NEON_GREEN, (self.x, self.y, self.width, self.height))
 
 # FUNCIÓN MENU
 def show_menu():
