@@ -16,6 +16,14 @@ try:
     player_img = pygame.image.load("ship.png")
     asteroid_img = pygame.image.load("asteroid.png")
     package_img = pygame.image.load("package.png")
+    # Sound
+    laser_sound = pygame.mixer.Sound("laser.wav")
+    explosion_sound = pygame.mixer.Sound("explosion.wav")
+
+    # Music
+    pygame.mixer.music.load("background_music.wav")
+    pygame.mixer.music.set_volume(0.3)  # Volumen 30%
+    pygame.mixer.music.play(-1)  # Infinite
 except pygame.error as e:
     print(f"Error: No se pudo cargar background.png. Asegúrate de que el archivo esté en la misma carpeta. Detalle: {e}")
     sys.exit()
@@ -139,7 +147,8 @@ while is_running:
                 if event.key == pygame.K_SPACE and not laser_active:
                     laser_active = True
                     laser_timer = 10
-
+                    laser_sound.play()
+                    laser_sound.fadeout(300)
     if in_menu:
         show_menu()
     else:
@@ -173,6 +182,7 @@ while is_running:
                 # 1. Choque físico con la nave
                 if player_rect.colliderect(item_rect):
                     if item.item_type == "obstacle":
+                        explosion_sound.play()
                         lives -= 1
                         if lives <= 0:
                             game_over = True
