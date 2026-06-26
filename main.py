@@ -17,8 +17,7 @@ try:
     asteroid_img = pygame.image.load("asteroid.png")
     package_img = pygame.image.load("package.png")
 except pygame.error as e:
-    print(
-        f"Error: No se pudo cargar background.png. Asegúrate de que el archivo esté en la misma carpeta. Detalle: {e}")
+    print(f"Error: No se pudo cargar background.png. Asegúrate de que el archivo esté en la misma carpeta. Detalle: {e}")
     sys.exit()
 
 
@@ -75,8 +74,9 @@ class Item:
         self.y += self.speed
 
     def draw(self, surface):
-        # Usamos blit para estampar la imagen que le corresponde (asteroide o paquete)
         surface.blit(self.image, (self.x, self.y))
+
+
 # FUNCIÓN MENU
 def show_menu():
     screen.blit(bg_image, (0, 0))
@@ -155,21 +155,22 @@ while is_running:
                 items.append(Item(tipo))
                 spawn_timer = 0
 
-            # LÓGICA DEL RAYO COLETOR
+            # LÓGICA DEL RAYO COLETOR (Fuera del spawn, corre a 60 FPS)
             laser_rect = None
             if laser_active:
-                laser_rect = pygame.Rect(player.x + player.width // 2 - 5, 0, 10, player.y)
+                laser_rect = pygame.Rect(player.x + player.width // 2 - 10, 0, 20, player.y)
                 laser_timer -= 1
                 if laser_timer <= 0:
                     laser_active = False
 
-            # ACTUALIZAR ITEMS Y DETECTAR COLISIONES
+            # ACTUALIZAR ITEMS Y DETECTAR COLISIONES (Fuera del spawn, corre a 60 FPS)
             for item in items[:]:
                 item.update()
 
                 item_rect = pygame.Rect(item.x, item.y, item.width, item.height)
                 player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
 
+                # 1. Choque físico con la nave
                 if player_rect.colliderect(item_rect):
                     if item.item_type == "obstacle":
                         lives -= 1
@@ -177,12 +178,13 @@ while is_running:
                             game_over = True
                     items.remove(item)
 
+                # 2. Captura con el Raio Coletor
                 elif laser_active and laser_rect and laser_rect.colliderect(item_rect):
                     if item.item_type == "package":
-                        score += 1
+                        score += 1  # Acá suma las entregas perfectamente
                         if score >= 10:
                             victory = True
-                        items.remove(item)
+                    items.remove(item)
 
             items = [it for it in items if it.y < SCREEN_HEIGHT]
 
@@ -200,7 +202,6 @@ while is_running:
             screen.blit(hud_surface, (20, 20))
 
         elif game_over:
-            # PANTALLA DE GAME OVER CON FONDO
             screen.blit(bg_image, (0, 0))
             game_over_surface = title_font.render("GAME OVER", True, RED)
             restart_surface = text_font.render("Pressione ENTER para tentar novamente", True, WHITE)
@@ -216,7 +217,6 @@ while is_running:
                 player.x = SCREEN_WIDTH // 2 - player.width // 2
 
         elif victory:
-            # PANTALLA DE VICTORIA CON FONDO
             screen.blit(bg_image, (0, 0))
             win_surface = title_font.render("MISSÃO CONCLUÍDA!", True, NEON_GREEN)
             sub_surface = text_font.render("Parabéns! Todas as entregas foram feitas.", True, WHITE)
