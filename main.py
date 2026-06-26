@@ -14,6 +14,8 @@ try:
     bg_image = pygame.image.load("background.png")
     bg_image = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
     player_img = pygame.image.load("ship.png")
+    asteroid_img = pygame.image.load("asteroid.png")
+
 except pygame.error as e:
     print(
         f"Error: No se pudo cargar background.png. Asegúrate de que el archivo esté en la misma carpeta. Detalle: {e}")
