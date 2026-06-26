@@ -2,7 +2,7 @@ import pygame
 import sys
 import random
 
-# 1. SETUP INITIAL (Aula 1 & 2)
+# 1. SETUP INITIAL
 pygame.init()
 
 SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
@@ -62,17 +62,17 @@ class Player:
         surface.blit(self.image, (self.x, self.y))
 
 
-# 3. ITEM CLASS (Obstáculos y Paquetes - El Desafío y el Objetivo)
+# 3. ITEM CLASS
 class Item:
     def __init__(self, item_type):
-        self.item_type = item_type  # Puede ser "obstacle" o "package"
+        self.item_type = item_type  # OBSTACLE
         self.width = 60
         self.height = 60
         self.x = random.randint(0, SCREEN_WIDTH - self.width)
         self.y = -self.height
         self.speed = random.randint(3, 6)
 
-        # Cargamos y escalamos la imagen correspondiente según el tipo de objeto
+
         if self.item_type == "obstacle":
             self.image = pygame.transform.scale(asteroid_img, (self.width, self.height))
         else:
@@ -85,11 +85,10 @@ class Item:
         surface.blit(self.image, (self.x, self.y))
 
 
-# FUNCIÓN MENU
+# MENU
 def show_menu():
     screen.blit(bg_image, (0, 0))
 
-    # Capa oscura transparente para que resalten las letras
     dark_overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
     dark_overlay.fill((0, 0, 0))
     dark_overlay.set_alpha(150)
@@ -99,7 +98,7 @@ def show_menu():
     title_surface = title_font.render("DELIVERY ESPACIAL", True, NEON_GREEN)
     screen.blit(title_surface, (SCREEN_WIDTH // 2 - title_surface.get_width() // 2, 150))
 
-    # UI Requirements (Controles obrigatórios em tela)
+    # UI Requirements
     controls_title = text_font.render("CONTROLES DA NAVE:", True, WHITE)
     move_control = text_font.render("<- / -> : Mover Nave de Entrega", True, WHITE)
     action_control = text_font.render("ESPAÇO : Lançar Raio Coletor", True, WHITE)
@@ -153,18 +152,18 @@ while is_running:
         show_menu()
     else:
         if not game_over and not victory:
-            # CONTROLES DE MOVIMIENTO
+            # Movement controls
             keys_pressed = pygame.key.get_pressed()
             player.move(keys_pressed)
 
-            # APARECER OBSTÁCULOS O PAQUETES
+            # Obstacles appear
             spawn_timer += 1
             if spawn_timer >= 40:
                 tipo = "obstacle" if random.random() < 0.7 else "package"
                 items.append(Item(tipo))
                 spawn_timer = 0
 
-            # LÓGICA DEL RAYO COLETOR (Fuera del spawn, corre a 60 FPS)
+            # Collector Beam Logic (Outside the spawn area, runs at 60 FPS)
             laser_rect = None
             if laser_active:
                 laser_rect = pygame.Rect(player.x + player.width // 2 - 10, 0, 20, player.y)
@@ -172,14 +171,14 @@ while is_running:
                 if laser_timer <= 0:
                     laser_active = False
 
-            # ACTUALIZAR ITEMS Y DETECTAR COLISIONES (Fuera del spawn, corre a 60 FPS)
+            # Update Items and Detect Collisions (Outside the spawn area, runs at 60 FPS)
             for item in items[:]:
                 item.update()
 
                 item_rect = pygame.Rect(item.x, item.y, item.width, item.height)
                 player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
 
-                # 1. Choque físico con la nave
+                # 1. Physical Collision with the Ship
                 if player_rect.colliderect(item_rect):
                     if item.item_type == "obstacle":
                         explosion_sound.play()
@@ -188,7 +187,7 @@ while is_running:
                             game_over = True
                     items.remove(item)
 
-                # 2. Captura con el Raio Coletor
+                # 2. Collection with the Collector Beam
                 elif laser_active and laser_rect and laser_rect.colliderect(item_rect):
                     if item.item_type == "package":
                         score += 1  # Acá suma las entregas perfectamente
@@ -198,7 +197,7 @@ while is_running:
 
             items = [it for it in items if it.y < SCREEN_HEIGHT]
 
-            # DESENHAR TELA DE JOGO
+            # Render the Game Screen
             screen.blit(bg_image, (0, 0))
 
             if laser_active:
