@@ -59,8 +59,8 @@ class Player:
 class Item:
     def __init__(self, item_type):
         self.item_type = item_type  # Puede ser "obstacle" o "package"
-        self.width = 40
-        self.height = 40
+        self.width = 60
+        self.height = 60
         self.x = random.randint(0, SCREEN_WIDTH - self.width)
         self.y = -self.height
         self.speed = random.randint(3, 6)
