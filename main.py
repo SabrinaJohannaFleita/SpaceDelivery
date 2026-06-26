@@ -58,22 +58,28 @@ class Player:
 # 3. ITEM CLASS
 class Item:
     def __init__(self, item_type):
-        self.item_type = item_type  # Puede ser "obstacle" (rojo) o "package" (verde)
+        self.item_type = item_type
         self.width = 35
         self.height = 35
         self.x = random.randint(0, SCREEN_WIDTH - self.width)
         self.y = -self.height
         self.speed = random.randint(3, 6)
 
+
+        if self.item_type == "obstacle":
+            self.image = pygame.transform.scale(asteroid_img, (self.width, self.height))
+
     def update(self):
         self.y += self.speed
 
+
     def draw(self, surface):
         if self.item_type == "obstacle":
-            pygame.draw.rect(surface, RED, (self.x, self.y, self.width, self.height))
-        else:
-            pygame.draw.rect(surface, NEON_GREEN, (self.x, self.y, self.width, self.height))
 
+            surface.blit(self.image, (self.x, self.y))
+        else:
+
+            pygame.draw.rect(surface, NEON_GREEN, (self.x, self.y, self.width, self.height))
 
 # FUNCIÓN MENU
 def show_menu():
