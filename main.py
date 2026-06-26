@@ -15,7 +15,7 @@ try:
     bg_image = pygame.transform.scale(bg_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
     player_img = pygame.image.load("ship.png")
     asteroid_img = pygame.image.load("asteroid.png")
-
+    package_img = pygame.image.load("package.png")
 except pygame.error as e:
     print(
         f"Error: No se pudo cargar background.png. Asegúrate de que el archivo esté en la misma carpeta. Detalle: {e}")
@@ -38,7 +38,7 @@ text_font = pygame.font.SysFont("Arial", 24)
 # 2. PLAYER CLASS
 class Player:
     def __init__(self):
-        self.width = 90
+        self.width = 110
         self.height = 60
         self.x = SCREEN_WIDTH // 2 - self.width // 2
         self.y = SCREEN_HEIGHT - 70
@@ -55,32 +55,28 @@ class Player:
         surface.blit(self.image, (self.x, self.y))
 
 
-# 3. ITEM CLASS
+# 3. ITEM CLASS (Obstáculos y Paquetes - El Desafío y el Objetivo)
 class Item:
     def __init__(self, item_type):
-        self.item_type = item_type
-        self.width = 35
-        self.height = 35
+        self.item_type = item_type  # Puede ser "obstacle" o "package"
+        self.width = 40
+        self.height = 40
         self.x = random.randint(0, SCREEN_WIDTH - self.width)
         self.y = -self.height
         self.speed = random.randint(3, 6)
 
-
+        # Cargamos y escalamos la imagen correspondiente según el tipo de objeto
         if self.item_type == "obstacle":
             self.image = pygame.transform.scale(asteroid_img, (self.width, self.height))
+        else:
+            self.image = pygame.transform.scale(package_img, (self.width, self.height))
 
     def update(self):
         self.y += self.speed
 
-
     def draw(self, surface):
-        if self.item_type == "obstacle":
-
-            surface.blit(self.image, (self.x, self.y))
-        else:
-
-            pygame.draw.rect(surface, NEON_GREEN, (self.x, self.y, self.width, self.height))
-
+        # Usamos blit para estampar la imagen que le corresponde (asteroide o paquete)
+        surface.blit(self.image, (self.x, self.y))
 # FUNCIÓN MENU
 def show_menu():
     screen.blit(bg_image, (0, 0))
